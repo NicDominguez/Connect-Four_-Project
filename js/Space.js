@@ -42,6 +42,7 @@ class Space {
     get owner() {
         if (this.token === null) {
             return null
+        } else {
             return this.token.owner;
         }
     }

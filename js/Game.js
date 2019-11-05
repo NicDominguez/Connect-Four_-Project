@@ -73,7 +73,7 @@ class Game {
             game.ready= false;
 
             activeToken.drop(targetSpace, function() {
-                game.gameupdateGameState(activeToken, targetSpace);
+                game.updateGameState(activeToken, targetSpace);
             });
         }
     }
@@ -102,8 +102,8 @@ class Game {
         }
 
         //for horizontal win
-        for (let x = 0; x < this.board.columns; x++) {
-            for (let y = 0; y < this.board.rows - 3; y++) {
+        for (let x = 0; x < this.board.columns - 3; x++) {
+            for (let y = 0; y < this.board.rows; y++) {
                 if (this.board.spaces[x][y].owner === owner &&
                     this.board.spaces[x+1][y].owner === owner &&
                     this.board.spaces[x+2][y].owner === owner &&
@@ -114,7 +114,7 @@ class Game {
         }
 
         //for diagonal win (back slash)
-        for (let x = 0; x < this.board.columns; x++) {
+        for (let x = 3; x < this.board.columns; x++) {
             for (let y = 0; y < this.board.rows - 3; y++) {
                 if (this.board.spaces[x][y].owner === owner &&
                     this.board.spaces[x-1][y+1].owner === owner &&
@@ -126,16 +126,18 @@ class Game {
         }
 
         //for diagonal win (forward slash)
-        for (let x = 0; x < this.board.columns; x++) {
-            for (let y = 0; y < this.board.rows - 3; y++) {
+        for (let x = 3; x < this.board.columns; x++) {
+            for (let y = 3; y < this.board.rows; y++) {
                 if (this.board.spaces[x][y].owner === owner &&
-                    this.board.spaces[x - 1][y - 1].owner === owner &&
-                    this.board.spaces[x - 2][y - 2].owner === owner &&
-                    this.board.spaces[x - 3][y - 3].owner === owner) {
+                    this.board.spaces[x-1][y-1].owner === owner &&
+                    this.board.spaces[x-2][y-2].owner === owner &&
+                    this.board.spaces[x-3][y-3].owner === owner) {
                         win = true
                 }
             }
         }
+
+        return win;
     }
 
     /**
@@ -170,9 +172,14 @@ class Game {
     */
 
     updateGameState(token, target) {
+
         target.mark(token)
 
-        if (!this.checkForWin(target)) {
+        if (this.checkForWin(target)) {
+
+            this.gameOver(`${target.owner.name} wins!`)
+
+        } else {
 
             this.switchPlayers()
 
@@ -181,10 +188,9 @@ class Game {
                 this.ready = true;
             } else {
                 this.gameOver(`I'm sorry there are no available tokens, the game is over.`)
+                this.ready = false;
             }
-
-        } else {
-            this.gameOver(`${target.owner.name} wins!`)
+            
         }
     }
 
